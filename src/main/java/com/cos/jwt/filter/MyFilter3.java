@@ -34,10 +34,10 @@ public class MyFilter3 implements Filter {
             } else {
                 PrintWriter writer = res.getWriter();
                 writer.println("인증 안 됨!!!!");
+//                filterChain.doFilter(servletRequest, servletResponse);
             }
         }
 
 //        pw.println("안녕~하하");
-//        filterChain.doFilter(servletRequest, servletResponse);
     }
 }
