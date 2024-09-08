@@ -83,15 +83,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // 인증이 완료 되었으니 토큰을 생성한다.
 //        String subject = "cos토큰 생성";
         String subject = "cos토큰";
-        String secret = "cos";
+//        String secret = "cos";// JwtProperties로 대체
         String jwtToken = JWT.create()
                 .withSubject(subject)
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 10))// 10초
+//                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 10))// 10분
+                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRE_TIME))// 10분
                 .withClaim("id", principalDetails.getUser().getId())
                 .withClaim("username", principalDetails.getUser().getUsername())
-                .sign(Algorithm.HMAC256(secret));
+                .sign(Algorithm.HMAC256(JwtProperties.SECRET));
 
-        jwtToken = "Bearer " + jwtToken;
+//        jwtToken = "Bearer " + jwtToken;
+        jwtToken = JwtProperties.JWT_PREFIX + jwtToken;
 
 //        response.setHeader("Authorization", 11111+jwtToken);
 //        response.setHeader("Authorization1", jwtToken);

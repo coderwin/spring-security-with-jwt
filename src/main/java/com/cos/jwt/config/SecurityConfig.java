@@ -1,6 +1,8 @@
 package com.cos.jwt.config;
 
 import com.cos.jwt.jwt.JwtAuthenticationFilter;
+import com.cos.jwt.jwt.JwtAuthorizationFilter;
+import com.cos.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +17,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CorsFilter corsFilter;
+    private final UserRepository userRepository;
 
 
     @Override
@@ -34,7 +37,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.addFilter(corsFilter);
 //        http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class);
-        http.addFilter(new JwtAuthenticationFilter(authenticationManager()));
+        http.addFilter(new JwtAuthenticationFilter(authenticationManager()));// 로그인 인증에 사용
+        http.addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository));// 인증, 권한이 필요한 페이지 요청에 사용
 
 
     }
