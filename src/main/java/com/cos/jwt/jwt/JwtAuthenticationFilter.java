@@ -1,5 +1,7 @@
 package com.cos.jwt.jwt;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.cos.jwt.auth.PrincipalDetails;
 import com.cos.jwt.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.Date;
 
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -76,6 +78,28 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         System.out.println("JwtAuthenticationFilter successfulAuthentication() : 인증이 완료되고 실행됨.");
 
-        super.successfulAuthentication(request, response, chain, authResult);
+        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+
+        // 인증이 완료 되었으니 토큰을 생성한다.
+//        String subject = "cos토큰 생성";
+        String subject = "cos토큰";
+        String secret = "cos";
+        String jwtToken = JWT.create()
+                .withSubject(subject)
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 10))// 10초
+                .withClaim("id", principalDetails.getUser().getId())
+                .withClaim("username", principalDetails.getUser().getUsername())
+                .sign(Algorithm.HMAC256(secret));
+
+        jwtToken = "Bearer " + jwtToken;
+
+//        response.setHeader("Authorization", 11111+jwtToken);
+//        response.setHeader("Authorization1", jwtToken);
+//        response.setHeader(HttpHeaders.AUTHORIZATION, jwtToken);
+        response.addHeader("Authorization", jwtToken);
+        response.addHeader("Authorization1", jwtToken);
+
+        // header에 값이 안 넘어간다.
+//        super.successfulAuthentication(request, response, chain, authResult);
     }
 }
